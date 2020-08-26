@@ -68,7 +68,7 @@ function setOptions(el, binding, vnode) {
 
     if (typeof options.action === 'function') {
         options.action = options.action.bind(vnode.context)
-    } else {
+    } else if (!(options.action instanceof Event)) {
         options.action = new Event(String(options.action), { bubbles: true, cancelable: false })
     }
 
