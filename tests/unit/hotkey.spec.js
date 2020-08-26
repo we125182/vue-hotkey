@@ -2,7 +2,6 @@ import Vue from 'vue'
 import { mount } from '@vue/test-utils'
 
 import hotkey from '@/../dist/directives.esm'
-import HotkeyMock from './hotkey.mock.vue'
 
 
 Vue.use(hotkey)
