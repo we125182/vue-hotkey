@@ -27,7 +27,7 @@ THE SOFTWARE.
 const defaults = {
     enabled: true,      // enables the directive if truthy
     keys: null,         // hotkey(s) as '[Ctrl+][Shift+][Alt+][Meta+]key_value'
-    action: 'click',     // which action to perform on the selected element
+    action: 'click',    // which action to perform on the selected element
     selector: '*',      // the action is performed on the first matching element
     priority: 0,        // priority in relation to other hotkey options
 }
