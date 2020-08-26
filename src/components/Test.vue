@@ -27,58 +27,34 @@
 
       <hr>
 
-      <div class="md-layout md-alignment-center-space-between md-gutter">
-        <button
-          v-hotkey="'ctrl+s'"
-          class="md-layout-item"
-          @click="reported.push('Ctrl-S:click')"
-        >
-          Ctrl-S
-        </button>
+      <div class="md-headline">
+        Dispatching click events
+      </div>
 
-        <div class="md-layout-item">
-          <input
-            id="checkbox"
-            v-model="enabled"
-            v-hotkey="{ keys: 'Ctrl+D', action: el => el.checked = !el.checked }"
-            type="checkbox"
+      <div class="md-layout md-alignment-center-left md-gutter">
+        <div
+          v-for="k in ['Ctrl+', 'Alt+', 'Shift+', 'Ctrl+Alt+', 'Ctrl+Shift+', 'Alt+Shift+', 'Ctrl+Alt+Shift+']"
+          :key="k"
+          class="md-layout-item md-flex-none"
+        >
+          <button
+            v-hotkey="{ keys: k + 'Enter' }"
+            @click="reported.push(k + 'Enter')"
           >
-          <label>Enabled (Ctrl-D):</label>
+            {{ k }}Enter
+          </button>
         </div>
 
-        <button
-          v-hotkey="{ enabled, keys: 'alt+Enter' }"
-          class="md-layout-item"
-          @click="reported.push('Alt-Enter:click')"
-        >
-          Alt-Enter
-        </button>
-
         <md-button
-          v-hotkey="{ keys: ['shift+Insert'] }"
-          class="md-layout-item md-raised"
-          @click="reported.push('Shift-Insert:click')"
+          v-hotkey="{ keys: ['Ctrl+s'] }"
+          class="md-layout-item md-flex-none md-raised"
+          @click="reported.push('Ctrl+S')"
         >
-          Shift-Insert
+          Ctrl+S
         </md-button>
-
-        <md-button
-          v-hotkey="{ keys: 'ctrl+Enter' }"
-          class="md-layout-item md-raised"
-          @click="reported.push('Ctrl-Enter:click')"
-        >
-          Ctrl-Enter
-        </md-button>
-
-        <md-field
-          v-hotkey="{ keys: '/', action: el => el.focus(), selector: 'input' }"
-          class="md-layout-item md-size-25"
-        >
-          <label>Search ("/" to focus)</label>
-          <md-input id="search" type="text" />
-        </md-field>
 
         <md-menu
+          class="md-layout-item md-flex-none"
           md-size="medium"
           md-align-trigger
         >
@@ -87,7 +63,7 @@
             class="md-raised"
             md-menu-trigger
           >
-            Alt-M for menu
+            Alt+M for menu
           </md-button>
 
           <md-menu-content class="md-layout-item">
@@ -95,60 +71,148 @@
               v-for="i in [1,2,3]"
               :key="i"
               v-hotkey="`ctrl+${i}`"
-              @click="reported.push(`Ctrl-${i}:click`)"
+              @click="reported.push(`Ctrl+${i}`)"
             >
-              Ctrl-{{ i }}
+              Ctrl+{{ i }}
             </md-menu-item>
           </md-menu-content>
         </md-menu>
-
-        <div class="md-layout-item" />
       </div>
 
-      <hr>
+
+      <div class="md-headline">
+        Dispatching other events
+      </div>
 
       <div class="md-layout md-alignment-center-left md-gutter">
-        <div class="md-layout-item">
+        <div
+          v-hotkey="{ keys: 'ctrl+g', action: 'dblclick' }"
+          class="md-layout-item md-flex-none clickable"
+          @dblclick="reported.push('Ctrl+G')"
+        >
+          Ctrl+G on doubleclick
+        </div>
+
+        <div
+          v-hotkey="{ keys: 'alt+g', action: dropEvent }"
+          class="md-layout-item md-flex-none droptarget"
+          @dragover.prevent
+          @dragenter.prevent
+          @drop="reported.push('Alt+G')"
+        >
+          Alt+G on drop
+        </div>
+
+        <div
+          class="md-layout-item md-flex-none clickable"
+          draggable
+        >
+          Draggable
+        </div>
+      </div>
+
+
+      <div class="md-headline">
+        Performing function calls
+      </div>
+
+      <div class="md-layout md-alignment-center-left md-gutter">
+        <div class="md-layout-item md-flex-none">
+          <input
+            id="toggling"
+            v-hotkey="{ keys: 'Ctrl+K', action: el => el.checked = !el.checked }"
+            type="checkbox"
+          >
+          <label>Ctrl+K</label>
+        </div>
+
+        <md-field
+          v-hotkey="{ keys: '/', action: el => el.focus(), selector: 'input' }"
+          class="md-layout-item md-size-25"
+        >
+          <label>Search ("/" to focus)</label>
+          <md-input
+            id="search"
+            type="text"
+          />
+        </md-field>
+      </div>
+
+
+      <div class="md-headline">
+        Multiple hotkeys mapped to the same event
+      </div>
+
+      <div class="md-layout md-alignment-center-left md-gutter">
+        <div class="md-layout-item md-flex-none">
+          <button
+            v-hotkey="{ keys: [ 'alt+a', 'ALT+B', 'Alt+c' ] }"
+            @click="reported.push('Alt+A/B/C')"
+          >
+            Alt+A/B/C
+          </button>
+        </div>
+      </div>
+
+
+      <div class="md-headline">
+        Enabling/disabling, function calls
+      </div>
+
+      <div class="md-layout md-alignment-center-left md-gutter">
+        <div class="md-layout-item md-flex-none">
+          <input
+            id="enable"
+            v-model="enabled"
+            v-hotkey="{ keys: 'Ctrl+E', action: () => $nextTick(() => enabled = !enabled) }"
+            type="checkbox"
+          >
+          <label>Hotkey enabled (Ctrl+E):</label>
+        </div>
+
+        <div class="md-layout-item md-flex-none">
+          <button
+            v-hotkey="{ enabled, keys: 'ctrl+shift+e' }"
+            @click="reported.push('Ctrl+Shift+E')"
+          >
+            Ctrl+Shift+E
+          </button>
+        </div>
+      </div>
+
+
+      <div class="md-headline">
+        Priority among multiple events mapped to the same hotkey
+      </div>
+
+      <div class="md-layout md-alignment-center-left md-gutter">
+        <div class="md-layout-item md-flex-none">
           Priority:
         </div>
 
-        <button
-          v-hotkey="['ctrl+o', 'F1']"
-          class="button-1 md-layout-item"
-          @click="reported.push('Ctrl-O, F1:click')"
+        <div
+          v-for="i in [1, 2, 3, 4]"
+          :key="i"
+          class="md-layout-item md-flex-none"
         >
-          Ctrl-O, F1
-        </button>
-
-        <button
-          v-hotkey="['ctrl+o', 'F2']"
-          class="button-2 md-layout-item"
-          @click="reported.push('Ctrl-O, F2:click')"
-        >
-          Ctrl-O, F2
-        </button>
-
-        <button
-          v-hotkey="{ keys: ['ctrl+o', 'F3'], priority: 5 }"
-          class="button-1 md-layout-item"
-          @click="reported.push('Ctrl-O, F3:click')"
-        >
-          Ctrl-O wins, F3
-        </button>
-
-        <button
-          v-hotkey="['ctrl+o', 'F4']"
-          class="button-2 md-layout-item"
-          @click="reported.push('Ctrl-O, F4:click')"
-        >
-          Ctrl-O, F4
-        </button>
+          <button
+            v-hotkey="i !== 3 ? 'ctrl+o' : { keys: 'ctrl+o', priority: 1 }"
+            class="button-1 md-layout-item"
+            @click="reported.push(`Ctrl+O#${i}`)"
+          >
+            {{ `Ctrl+O#${i}` + (i === 3 ? ' wins' : '') }}
+          </button>
+        </div>
       </div>
 
-      <hr>
+
+      <div class="md-headline">
+        Actions inside opaque components, multiple directives on the same element
+      </div>
 
       <div class="md-layout md-alignment-center-left md-gutter">
         <md-button
+          id="confirm"
           class="md-raised"
           @click="confirmActive = true"
         >
@@ -156,7 +220,8 @@
         </md-button>
 
         <md-button
-          class="md-raised"
+          id="dialog"
+          class="md-layout-item md-flex-none md-raised"
           @click="dialogActive = true"
         >
           Dialog
@@ -187,16 +252,16 @@
         <md-dialog-actions>
           <md-button
             class="md-raised button-1"
-            @click="reported.push('Ctrl-O:dialog:click'); dialogActive=false"
+            @click="reported.push('Ctrl+O:dialog'); dialogActive=false"
           >
-            Ctrl-O
+            Ctrl+O
           </md-button>
 
           <md-button
             class="md-raised button-2"
-            @click="reported.push('Ctrl-X:dialog:click'); dialogActive=false"
+            @click="reported.push('Ctrl+X:dialog'); dialogActive=false"
           >
-            Ctrl-X
+            Ctrl+X
           </md-button>
         </md-dialog-actions>
       </md-dialog>
@@ -210,8 +275,9 @@
 
         data() {
             return {
-                enabled: false,
                 reported: [],
+                dropEvent: new DragEvent('drop'),
+                enabled: false,
                 dialogActive: false,
                 confirmActive: false,
             }

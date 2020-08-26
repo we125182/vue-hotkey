@@ -11,7 +11,30 @@ body, .md-app {
     height: 100%;
 }
 
+.md-layout > .md-flex-none {
+    flex: none;
+}
+
 /* Workaround for: MdModalDialog button text may not appear in Webkit browsers */
 .md-dialog-actions .md-ripple {
     z-index: auto;
+}
+
+.md-headline {
+    margin: 18px 0 12px 0;
+    background-color: lightskyblue;
+}
+
+.clickable, .droptarget {
+    margin: 0 12px;
+    padding: 6px;
+}
+
+.clickable {
+    background-color: palegreen;
+    cursor: pointer;
+}
+
+.droptarget {
+    border: solid 1px gray;
 }
