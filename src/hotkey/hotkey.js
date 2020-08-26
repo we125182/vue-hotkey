@@ -110,8 +110,9 @@ function toKeyEvent(key) {
         .filter(k => k)
         .forEach(k => keyEvent.modifiers[k + 'Key'] = true)
 
-    // The shift key is irrelevant for single characters as it depends on the type of keyboard
-    if (keyEvent.key.length === 1) {
+    // The shift key is irrelevant for single characters that do not have any other modifier.
+    // Whether or not it is required to produce the character depends on the type of keyboard.
+    if (keyEvent.key.length === 1 && !keyEvent.modifiers.altKey && !keyEvent.modifiers.ctrlKey && !keyEvent.modifiers.metaKey) {
         delete keyEvent.modifiers.shiftKey
     }
 
