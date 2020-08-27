@@ -268,9 +268,11 @@ const hotkey = {
     },
 
     unbind(el, binding, vnode) {
-        vnode.$hotkey.forEach(o => vnode.context.$hotkey.optionsSet.delete(o))
-        delete vnode.context.$hotkey.keymap
-        delete vnode.$hotkey
+        if (vnode.$hotkey) {
+            vnode.$hotkey.forEach(o => vnode.context.$hotkey.optionsSet.delete(o))
+            delete vnode.context.$hotkey.keymap
+            delete vnode.$hotkey
+        }
     },
 }
 
