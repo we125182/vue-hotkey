@@ -137,12 +137,13 @@
           />
         </md-field>
 
-        <md-field
-          class="md-layout-item md-size-25"
+        <div
+          id="contenteditable"
+          class="md-layout-item md-flex-none droptarget"
+          contenteditable
         >
-          <label>Can type "/" here</label>
-          <md-input type="text" />
-        </md-field>
+          Can type "/" here, too
+        </div>
       </div>
 
 

@@ -61,7 +61,7 @@ The configuration object supports the following properties:
 | Name | Type | Effect | Default |
 |------|------|--------|---------|
 | `enabled` | `Boolean` | Enables the directive if truthy. | `true` |
-| `keys` | `String` or `Array<String>` | Hotkey(s) in the format <code>[Ctrl+][Shift+][Alt+][Meta+]<a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values">key_value</a></code>.<br>Plain characters should have at least one `Ctrl`, `Alt` or `Meta` modifier in order to avoid conflicts with input elements (see [this example](#calling-a-function-in-response-to-a-hotkey) for an exception). `Shift` is irrelevant for plain characters as they are matched case-insensitively.<br>Hotkeys will override browser shortcuts if possible.| none, must be specified |
+| `keys` | `String` or `Array<String>` | Hotkey(s) in the format <code>[Ctrl+][Shift+][Alt+][Meta+]<a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values">key_value</a></code>.<br>Plain characters should have at least one `Ctrl`, `Alt` or `Meta` modifier in order to avoid conflicts with input elements (see [this example](#using-plain-characters-as-hotkeys) for an exception). `Shift` is irrelevant for plain characters as they are matched case-insensitively.<br>Hotkeys will override browser shortcuts if possible.| none, must be specified |
 | `action` | `String` or `Event` or `Function` | An event name, an [`Event`](https://developer.mozilla.org/en-US/docs/Web/API/Event) object, or a function to be called.<br>The function receives the target element as argument, and `this` references the surrounding Vue component's `vm`. | `'click'` |
 | `selector` | `String` | The first element matching this selector (starting with the element on which `v-hotkey` is placed) becomes the target for `action`. | `'*'` |
 | `priority` | `Number` | Priority in relation to other hotkey configurations.<br>If the same hotkey has been mapped several times then the configuration with the highest priority wins. | `0` |
@@ -86,19 +86,6 @@ A `target` is not required for `<md-button>` since this component is resolved to
 
 #### Calling a function in response to a hotkey
 
-Entering search text after a leading `/` (inspired by the [Vuetify](https://vuetifyjs.com/) homepage):
-
-```html
-<md-field v-hotkey="{ keys: '/', action: el => el.focus(), selector: 'input' }">
-  <label>Search ("/" to focus)</label>
-  <md-input type="text" />
-</md-field>
-```
-
-`v-hotkey` could have been placed also on `<md-input>`, omitting the `selector` because `<md-input>`
-resolves to `<input>`.
-
-
 Toggling a checkbox value:
 
 ```html
@@ -112,7 +99,26 @@ Toggling a checkbox value:
 ```
 
 Please note that `action: details = !details` would lead to an infinite render loop, and
-`action: el => el.checked = !el.checked` does not toggle variable `details`.
+`action: el => el.checked = !el.checked` would not toggle variable `details`.
+
+
+#### Using plain characters as hotkeys
+
+Entering search text after a leading `/` (inspired by the [Vuetify](https://vuetifyjs.com/) homepage):
+
+```html
+<md-field v-hotkey="{ keys: '/', action: el => el.focus(), selector: 'input' }">
+  <label>Search ("/" to focus)</label>
+  <md-input type="text" />
+</md-field>
+```
+
+Hotkeys that are plain characters are disabled automatically on inputs and contenteditable elements
+so that these hotkeys can be entered in such elements.
+
+`v-hotkey` could have been placed also on `<md-input>`, omitting the `selector` because `<md-input>`
+resolves to `<input>`.
+
 
 #### Placing multiple hotkey mappings on the same element
 

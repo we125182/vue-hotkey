@@ -56,6 +56,18 @@ test('calls functions', async t => {
 })
 
 
+test('permits plain-character hotkeys to be entered in input and contenteditable elements', async t => {
+    const
+        inputs = [Selector('#search'), Selector('#contenteditable')]
+
+    inputs.forEach(async s => {
+        await t
+            .typeText(s, '/', { replace: true })
+            .expect(s.textContent).eql('/')
+    })
+})
+
+
 test('recognizes multiple hotkeys mapped to the same event', async t => {
     const
         hotkeys = ['alt+a', 'alt+b', 'alt+c']

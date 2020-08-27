@@ -205,8 +205,16 @@ const hotkey = {
         }
 
         Vue.prototype.$hotkey.handleEvent = function(keyEvent) {
-            // Build the keymap lazily, assuming that keystrokes happen less frequently
-            // than directives updates
+            // Do not process plain characters typed into contenteditable or input elements
+            const keyId = toKeyId(keyEvent)
+            if (keyId.match(/^._$/) &&
+                ((document.activeElement instanceof HTMLInputElement) &&
+                    document.activeElement.type.match(/date|email|month|number|password|search|tel|text|time|url|week/i) ||
+                    ((document.activeElement instanceof HTMLElement) && document.activeElement.isContentEditable))) {
+                return
+            }
+
+            // Build the keymap lazily, assuming that keystrokes happen less frequently than directive updates
             if (!this.keymap) {
                 // Sort options by ascending priority
                 const sortedOptions = Array.from(this.optionsSet).sort((o1, o2) => o1.priority - o2.priority)
@@ -217,7 +225,7 @@ const hotkey = {
             }
 
             // Find options matching this key event
-            const options = this.keymap.get(toKeyId(keyEvent))
+            const options = this.keymap.get(keyId)
 
             if (options) {
                 // Perform the action on the target element
