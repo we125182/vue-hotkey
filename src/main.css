@@ -11,7 +11,7 @@ body, .md-app {
     height: 100%;
 }
 
-.md-layout > .md-flex-none {
+.md-layout-item.md-flex-none {
     flex: none;
 }
 
@@ -23,6 +23,10 @@ body, .md-app {
 .md-headline {
     margin: 18px 0 12px 0;
     background-color: lightskyblue;
+}
+
+.md-field {
+    margin-right: 1em;
 }
 
 .clickable, .droptarget {

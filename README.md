@@ -62,7 +62,7 @@ The configuration object supports the following properties:
 |------|------|--------|---------|
 | `enabled` | `Boolean` | Enables the directive if truthy. | `true` |
 | `keys` | `String` or `Array<String>` | Hotkey(s) in the format <code>[Ctrl+][Shift+][Alt+][Meta+]<a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values">key_value</a></code>.<br>Plain characters should have at least one `Ctrl`, `Alt` or `Meta` modifier in order to avoid conflicts with input elements (see [this example](#calling-a-function-in-response-to-a-hotkey) for an exception). `Shift` is irrelevant for plain characters as they are matched case-insensitively.<br>Hotkeys will override browser shortcuts if possible.| none, must be specified |
-| `action` | `String` or `Event` or `Function` | An event name, an [`Event`](https://developer.mozilla.org/en-US/docs/Web/API/Event) object, or a function to be called.<br>For a function, the target DOM element is passed as argument, and `this` references the surrounding Vue component's `vm`. | `'click'` |
+| `action` | `String` or `Event` or `Function` | An event name, an [`Event`](https://developer.mozilla.org/en-US/docs/Web/API/Event) object, or a function to be called.<br>The function receives the target element as argument, and `this` references the surrounding Vue component's `vm`. | `'click'` |
 | `selector` | `String` | The first element matching this selector (starting with the element on which `v-hotkey` is placed) becomes the target for `action`. | `'*'` |
 | `priority` | `Number` | Priority in relation to other hotkey configurations.<br>If the same hotkey has been mapped several times then the configuration with the highest priority wins. | `0` |
 
@@ -116,13 +116,13 @@ Please note that `action: details = !details` would lead to an infinite render l
 
 #### Placing multiple hotkey mappings on the same element
 
-Multiple `v-hotkey` directives can be placed on the same element if unique modifiers are appended
-to the directive name:
+Multiple `v-hotkey` directives can be placed on the same element if a unique argument is appended
+to each directive:
 
 ```vue
 <md-dialog
-  v-hotkey.1="{ keys: 'ctrl+s', selector: '.save-btn' }"
-  v-hotkey.2="{ keys: 'ctrl+x', selector: '.exit-btn' }">
+  v-hotkey:1="{ keys: 'ctrl+s', selector: '.save-btn' }"
+  v-hotkey:2="{ keys: 'ctrl+x', selector: '.exit-btn' }">
     ...
   <md-button class="save-btn">Save</md-button>
   <md-button class="exit-btn">Exit</md-button>
@@ -138,8 +138,8 @@ component is not exposed we can still map hotkeys to the buttons:
 
 ```html
 <md-dialog-confirm
-  v-hotkey.1="{ keys: 'N', selector: '.md-dialog-actions button' }"
-  v-hotkey.2="{ keys: 'Y', selector: '.md-dialog-actions button ~ button' }"
+  v-hotkey:1="{ keys: 'N', selector: '.md-dialog-actions button' }"
+  v-hotkey:2="{ keys: 'Y', selector: '.md-dialog-actions button ~ button' }"
   md-content="Press Y or N to confirm or to reject"
   md-confirm-text="Yes"
   md-cancel-text="No" />

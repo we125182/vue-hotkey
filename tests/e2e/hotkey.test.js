@@ -69,7 +69,7 @@ test('recognizes multiple hotkeys mapped to the same event', async t => {
 })
 
 
-test('can be disabled', async t => {
+test('can be enabled/disabled', async t => {
     const
         toggle = 'ctrl+e',
         button = 'Ctrl+Shift+E'
@@ -86,6 +86,26 @@ test('can be disabled', async t => {
         .pressKey(toggle)
         .pressKey(button)
         .expect(reported.textContent).eql('')
+})
+
+
+test('can enable/disable multiple directives on the same element', async t => {
+    const
+        toggle = 'alt+d',
+        hotkeys = ['Ctrl+F1', 'Ctrl+F2'],
+        expected = [hotkeys, ['', ''], hotkeys]
+
+    expected.forEach(async e => {
+        hotkeys.forEach(async (k, index) => {
+            await t
+                .click(clear)
+                .pressKey(k)
+                .expect(reported.textContent).eql(e[index])
+        })
+
+        await t
+            .pressKey(toggle)
+    })
 })
 
 

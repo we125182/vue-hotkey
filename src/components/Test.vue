@@ -136,6 +136,13 @@
             type="text"
           />
         </md-field>
+
+        <md-field
+          class="md-layout-item md-size-25"
+        >
+          <label>Can type "/" here</label>
+          <md-input type="text" />
+        </md-field>
       </div>
 
 
@@ -162,9 +169,8 @@
       <div class="md-layout md-alignment-center-left md-gutter">
         <div class="md-layout-item md-flex-none">
           <input
-            id="enable"
-            v-model="enabled"
-            v-hotkey="{ keys: 'Ctrl+E', action: () => $nextTick(() => enabled = !enabled) }"
+            v-model="buttonEnabled"
+            v-hotkey="{ keys: 'Ctrl+E', action: () => $nextTick(() => buttonEnabled = !buttonEnabled) }"
             type="checkbox"
           >
           <label>Hotkey enabled (Ctrl+E):</label>
@@ -172,11 +178,47 @@
 
         <div class="md-layout-item md-flex-none">
           <button
-            v-hotkey="{ enabled, keys: 'ctrl+shift+e' }"
+            v-hotkey="{ enabled: buttonEnabled, keys: 'ctrl+shift+e' }"
             @click="reported.push('Ctrl+Shift+E')"
           >
             Ctrl+Shift+E
           </button>
+        </div>
+      </div>
+
+
+      <div class="md-headline">
+        Enabling/disabling multiple directives on the same element
+      </div>
+
+      <div class="md-layout md-alignment-center-left md-gutter">
+        <div class="md-layout-item md-flex-none">
+          <input
+            v-model="divEnabled"
+            v-hotkey="{ keys: 'Alt+D', action: () => $nextTick(() => divEnabled = !divEnabled) }"
+            type="checkbox"
+          >
+          <label>Hotkeys enabled (Alt+D):</label>
+        </div>
+
+        <div
+          class="md-layout-item md-flex-none"
+          v-hotkey:1="{ enabled: divEnabled, keys: 'ctrl+f1', selector: 'button' }"
+          v-hotkey:2="{ enabled: divEnabled, keys: 'ctrl+f2', selector: 'button ~ button' }"
+        >
+          <md-button
+            class="md-raised"
+            @click="reported.push('Ctrl+F1')"
+          >
+            Ctrl+F1
+          </md-button>
+
+          <md-button
+            class="md-raised"
+            @click="reported.push('Ctrl+F2')"
+          >
+            Ctrl+F2
+          </md-button>
         </div>
       </div>
 
@@ -229,8 +271,8 @@
       </div>
 
       <md-dialog-confirm
-        v-hotkey.1="{ keys: 'N', selector: '.md-dialog-actions button' }"
-        v-hotkey.2="{ keys: 'Y', selector: '.md-dialog-actions button ~ button' }"
+        v-hotkey:1="{ keys: 'N', selector: '.md-dialog-actions button' }"
+        v-hotkey:2="{ keys: 'Y', selector: '.md-dialog-actions button ~ button' }"
         :md-active.sync="confirmActive"
         md-title="Test confirmation"
         md-content="Press Y or N to confirm or reject"
@@ -241,8 +283,8 @@
       />
 
       <md-dialog
-        v-hotkey.1="{ keys: 'ctrl+o', priority: 10, selector: '.button-1' }"
-        v-hotkey.2="{ keys: 'ctrl+x', selector: '.button-2' }"
+        v-hotkey:1="{ keys: 'ctrl+o', priority: 10, selector: '.button-1' }"
+        v-hotkey:2="{ keys: 'ctrl+x', selector: '.button-2' }"
         :md-active.sync="dialogActive"
       >
         <md-dialog-title>Test dialog</md-dialog-title>
@@ -277,7 +319,8 @@
             return {
                 reported: [],
                 dropEvent: new DragEvent('drop'),
-                enabled: false,
+                buttonEnabled: false,
+                divEnabled: true,
                 dialogActive: false,
                 confirmActive: false,
             }

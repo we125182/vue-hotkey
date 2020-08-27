@@ -1,6 +1,6 @@
 {
   "name": "@undecaf/vue-hotkey",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A flexible Vue hotkey directive",
   "keywords": [
     "vue",

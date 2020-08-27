@@ -33,16 +33,22 @@ const defaults = {
 }
 
 function setOptions(el, binding, vnode) {
-    let options
+    let options = {}
 
-    // Process directive value
+    // Make sure that options can be stored on this VNode
+    vnode.$hotkey = vnode.$hotkey || new Map()
+
+    // The directive argument is used as the VNode-local option name
+    options.arg = getArg(binding)
+
+    // Process directive value, validate regardless of whether enabled or not
     const value = binding.value
 
     if (Array.isArray(value)) {
-        options = Object.assign({}, defaults, { keys: value.map(ev => String(ev)) })
+        Object.assign(options, defaults, { keys: value.map(ev => String(ev)) })
 
     } else if (typeof value === 'string') {
-        options = Object.assign({}, defaults, { keys: value })
+        Object.assign(options, defaults, { keys: value })
 
     } else if (value && typeof value === 'object') {
         Object.keys(value).forEach(opt => {
@@ -50,7 +56,7 @@ function setOptions(el, binding, vnode) {
                 throw `Unknown option '${opt}'; known options: ${Object.keys(defaults).join(', ')}`
             }
         })
-        options = Object.assign({}, defaults, value)
+        Object.assign(options, defaults, value)
 
     } else {
         throw 'No configuration found'
@@ -60,28 +66,38 @@ function setOptions(el, binding, vnode) {
         throw 'keys property not found'
     }
 
-    if (typeof options.keys === 'string') {
-        options.keys = [options.keys]
+    if (options.enabled) {
+        if (typeof options.keys === 'string') {
+            options.keys = [options.keys]
+        }
+
+        options.keyIds = options.keys.map(toKeyEvent).map(toKeyId)
+
+        if (typeof options.action === 'function') {
+            options.action = options.action.bind(vnode.context)
+        } else if (!(options.action instanceof Event)) {
+            options.action = new Event(String(options.action), {bubbles: true, cancelable: false})
+        }
+
+        options.priority = Number(options.priority)
+
+        options.el = el
+
+        // Save options for each enabled directive in VNode
+        vnode.$hotkey.set(options.arg, options)
+
+        // Add to the global options set
+        vnode.context.$hotkey.optionsSet.add(options)
     }
 
-    options.keyEvents = options.keys.map(toKeyEvent)
+    // Invalidate the global keymap so that it gets rebuilt on the next key event
+    delete vnode.context.$hotkey.keymap
+}
 
-    if (typeof options.action === 'function') {
-        options.action = options.action.bind(vnode.context)
-    } else if (!(options.action instanceof Event)) {
-        options.action = new Event(String(options.action), { bubbles: true, cancelable: false })
-    }
 
-    options.priority = Number(options.priority)
-
-    options.el = el
-
-    // Save options in VNode for update and cleanup
-    vnode.$hotkey = options
-
-    // Add options to options list and sort by descending priority
-    vnode.context.$hotkey.optionsList.push(options)
-    vnode.context.$hotkey.optionsList.sort((a, b) => b.priority - a.priority)
+function getArg(binding) {
+    // Use a default that should never occur as an argument
+    return binding.arg || '='
 }
 
 
@@ -95,12 +111,10 @@ function toKeyEvent(key) {
 
     const keyEvent = {
         key: keys[2].toLowerCase(),
-        modifiers: {
-            altKey: false,
-            ctrlKey: false,
-            metaKey: false,
-            shiftKey: false,
-        },
+        altKey: false,
+        ctrlKey: false,
+        metaKey: false,
+        shiftKey: false,
     }
 
     // Set keyEvent properties as appropriate
@@ -108,16 +122,28 @@ function toKeyEvent(key) {
         .toLowerCase()
         .split('+')
         .filter(k => k)
-        .forEach(k => keyEvent.modifiers[k + 'Key'] = true)
-
-    // The shift key is irrelevant for single characters that do not have any other modifier.
-    // Whether or not it is required to produce the character depends on the type of keyboard.
-    if (keyEvent.key.length === 1 && !keyEvent.modifiers.altKey && !keyEvent.modifiers.ctrlKey && !keyEvent.modifiers.metaKey) {
-        delete keyEvent.modifiers.shiftKey
-    }
+        .forEach(k => keyEvent[k + 'Key'] = true)
 
     return keyEvent
 }
+
+
+function toKeyId(keyEvent) {
+    let id = keyEvent.key.toLowerCase() + '_'
+
+    if (keyEvent.altKey) id += 'A'
+    if (keyEvent.ctrlKey) id += 'C'
+    if (keyEvent.metaKey) id += 'M'
+
+    // The shift key is ignored for single characters that do not have any other modifier
+    // because it depends on the type of keyboard whether or not it is required to produce that character
+    if (keyEvent.shiftKey && (keyEvent.key.length !== 1 || keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey)) {
+        id += 'S'
+    }
+
+    return id
+}
+
 
 // Deep object comparison
 function equals(val1, val2) {
@@ -128,7 +154,6 @@ function equals(val1, val2) {
     if (val1 instanceof Function) {
         // Compare the source code
         return (val2 instanceof Function) && (val1.toString() === val2.toString())
-
     }
 
     const size1 = size(val1)
@@ -150,6 +175,7 @@ function equals(val1, val2) {
         return Object.keys(val1).every(k => equals(val1[k], val2[k]))
     }
 }
+
 
 function cleanup(vnode) {
     if (vnode.$hotkey) {
@@ -175,37 +201,39 @@ const hotkey = {
 
 
         Vue.prototype.$hotkey = {
-            optionsList: []
+            optionsSet: new Set(),
         }
 
-        Vue.prototype.$hotkey.handleEvent = function(ev) {
-            // Process option objects in order of descending priority
-            this.optionsList.some(o => {
-                // Are these options enabled and does the event match one of their key events?
-                if (o.enabled &&
-                    o.keyEvents
-                        .some(ke =>
-                            (ev.key.toLowerCase() === ke.key) &&
-                            Object.keys(ke.modifiers).every(m => ev[m] === ke.modifiers[m]))
-                ) {
-                    // Perform the action on the target element
-                    const target = o.el.matches(o.selector) ? o.el : o.el.querySelector(o.selector)
-                    if (target) {
-                        if (typeof o.action === 'function') {
-                            o.action(target)
+        Vue.prototype.$hotkey.handleEvent = function(keyEvent) {
+            // Build the keymap lazily, assuming that keystrokes happen less frequently
+            // than directives updates
+            if (!this.keymap) {
+                // Sort options by ascending priority
+                const sortedOptions = Array.from(this.optionsSet).sort((o1, o2) => o1.priority - o2.priority)
 
-                        } else {
-                            target.dispatchEvent(o.action)
-                        }
+                // Map each keyId to the respective option
+                this.keymap = new Map()
+                sortedOptions.forEach(o => o.keyIds.forEach(ki => this.keymap.set(ki, o)))
+            }
 
-                        ev.preventDefault()
-                        ev.stopImmediatePropagation()
+            // Find options matching this key event
+            const options = this.keymap.get(toKeyId(keyEvent))
 
-                        // Terminate .some()
-                        return true
+            if (options) {
+                // Perform the action on the target element
+                const target = options.el.matches(options.selector) ? options.el : options.el.querySelector(options.selector)
+                if (target) {
+                    if (typeof options.action === 'function') {
+                        options.action(target)
+
+                    } else {
+                        target.dispatchEvent(options.action)
                     }
+
+                    keyEvent.preventDefault()
+                    keyEvent.stopImmediatePropagation()
                 }
-            })
+            }
         }
 
         document.addEventListener('keydown', Vue.prototype.$hotkey.handleEvent.bind(Vue.prototype.$hotkey), true)
@@ -219,21 +247,24 @@ const hotkey = {
     },
 
     update(el, binding, vnode, oldVnode) {
-        if (vnode !== oldVnode) {
-            if (equals(binding.value, binding.oldValue)) {
-                // Options unchanged, just move them
-                vnode.$hotkey = oldVnode.$hotkey
+        const arg = getArg(binding)
 
-            } else {
-                // Regenerate options
-                cleanup(oldVnode)
-                setOptions(el, binding, vnode)
-            }
+        if (equals(binding.value, binding.oldValue)) {
+            // Options unchanged, just copy them over
+            vnode.$hotkey = vnode.$hotkey || new Map()
+            vnode.$hotkey.set(arg, oldVnode.$hotkey.get(arg))
+
+        } else {
+            // Replace options
+            vnode.context.$hotkey.optionsSet.delete(oldVnode.$hotkey.get(arg))
+            setOptions(el, binding, vnode)
         }
     },
 
     unbind(el, binding, vnode) {
-        cleanup(vnode)
+        vnode.$hotkey.forEach(vnode.context.$hotkey.optionsSet.delete)
+        delete vnode.context.$hotkey.keymap
+        delete vnode.$hotkey
     },
 }
 
