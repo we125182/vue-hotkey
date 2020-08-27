@@ -58,7 +58,7 @@ test('calls functions', async t => {
 
 test('permits plain-character hotkeys to be entered in input and contenteditable elements', async t => {
     const
-        inputs = [Selector('#search'), Selector('#contenteditable')]
+        inputs = [Selector('#search'), Selector('#input'), Selector('#textarea'), Selector('#contenteditable')]
 
     inputs.forEach(async s => {
         await t

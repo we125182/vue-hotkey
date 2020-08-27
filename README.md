@@ -114,7 +114,7 @@ Entering search text after a leading `/` (inspired by the [Vuetify](https://vuet
 ```
 
 Hotkeys that are plain characters are disabled automatically on inputs and contenteditable elements
-so that these hotkeys can be entered in such elements.
+so that these characters can be entered in such elements.
 
 `v-hotkey` could have been placed also on `<md-input>`, omitting the `selector` because `<md-input>`
 resolves to `<input>`.

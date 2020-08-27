@@ -207,10 +207,8 @@ const hotkey = {
         Vue.prototype.$hotkey.handleEvent = function(keyEvent) {
             // Do not process plain characters typed into contenteditable or input elements
             const keyId = toKeyId(keyEvent)
-            if (keyId.match(/^._$/) &&
-                ((document.activeElement instanceof HTMLInputElement) &&
-                    document.activeElement.type.match(/date|email|month|number|password|search|tel|text|time|url|week/i) ||
-                    ((document.activeElement instanceof HTMLElement) && document.activeElement.isContentEditable))) {
+            if (keyId.length == 2 && document.activeElement &&
+                (document.activeElement.isContentEditable || document.activeElement.selectionDirection)) {
                 return
             }
 
@@ -270,7 +268,7 @@ const hotkey = {
     },
 
     unbind(el, binding, vnode) {
-        vnode.$hotkey.forEach(vnode.context.$hotkey.optionsSet.delete)
+        vnode.$hotkey.forEach(o => vnode.context.$hotkey.optionsSet.delete(o))
         delete vnode.context.$hotkey.keymap
         delete vnode.$hotkey
     },

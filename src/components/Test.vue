@@ -137,12 +137,27 @@
           />
         </md-field>
 
+        <div class="md-layout-item md-flex-none">
+          <input
+            id="input"
+            type="search"
+            placeholder="Can type &quot;/&quot; here"
+          >
+        </div>
+
+        <textarea
+          id="textarea"
+          class="md-layout-item md-flex-none"
+        >
+          Can type "/" here
+        </textarea>
+
         <div
           id="contenteditable"
           class="md-layout-item md-flex-none droptarget"
           contenteditable
         >
-          Can type "/" here, too
+          Can type "/" here
         </div>
       </div>
 
@@ -203,9 +218,9 @@
         </div>
 
         <div
-          class="md-layout-item md-flex-none"
           v-hotkey:1="{ enabled: divEnabled, keys: 'ctrl+f1', selector: 'button' }"
           v-hotkey:2="{ enabled: divEnabled, keys: 'ctrl+f2', selector: 'button ~ button' }"
+          class="md-layout-item md-flex-none"
         >
           <md-button
             class="md-raised"
