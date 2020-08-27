@@ -84,7 +84,7 @@ test('recognizes multiple hotkeys mapped to the same event', async t => {
 test('can be enabled/disabled', async t => {
     const
         toggle = 'ctrl+e',
-        button = 'Ctrl+Shift+E'
+        button = 'Ctrl+X'
 
     await t
         .pressKey(button)

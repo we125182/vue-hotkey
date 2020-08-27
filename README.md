@@ -19,6 +19,9 @@ a function call. It offers the following features:
     special [key value](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values).
     Multiple hotkeys can be mapped to the same action.
 +   Hotkeys will override browser shortcuts if possible.
++   High performance: the `keydown` event overhead is very low and practically independent of the number
+    of hotkeys (the test app in the [repository](https://github.com/undecaf/vue-hotkey) defines
+    over 800&nbsp; hotkeys). 
 +   The configuration can be changed dynamically.
 +   The directive can be disabled.
    
@@ -73,7 +76,7 @@ Property changes after binding are taken into account.
 
 #### Generating button clicks
 
-Making hotkeys click a HTML button and a [Vue Material Button](https://vuematerial.io/components/button):
+Hotkeys that click an HTML button and a [Vue Material Button](https://vuematerial.io/components/button):
 
 ```html
 <button v-hotkey="'alt+Enter'" @click="...">Submit</button>
@@ -81,7 +84,8 @@ Making hotkeys click a HTML button and a [Vue Material Button](https://vuemateri
 <md-button v-hotkey="['ctrl+s', 'Alt+S']" @click="...">Save</md-button>
 ```
 
-A `target` is not required for `<md-button>` since this component is resolved to a `<button>` anyway.
+No `target` is required for `<md-button>` since this component resolves to the target
+(a `<button>`) anyway.
  
 
 #### Calling a function in response to a hotkey
@@ -113,8 +117,8 @@ Entering search text after a leading `/` (inspired by the [Vuetify](https://vuet
 </md-field>
 ```
 
-Hotkeys that are plain characters are disabled automatically on inputs and contenteditable elements
-so that these characters can be entered in such elements.
+Plain-character hotkeys are disabled automatically on inputs and contenteditable elements
+so that they can be entered in these elements.
 
 `v-hotkey` could have been placed also on `<md-input>`, omitting the `selector` because `<md-input>`
 resolves to `<input>`.

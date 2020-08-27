@@ -194,10 +194,10 @@
 
         <div class="md-layout-item md-flex-none">
           <button
-            v-hotkey="{ enabled: buttonEnabled, keys: 'ctrl+shift+e' }"
-            @click="reported.push('Ctrl+Shift+E')"
+            v-hotkey="{ enabled: buttonEnabled, keys: 'ctrl+x' }"
+            @click="reported.push('Ctrl+X')"
           >
-            Ctrl+Shift+E
+            Ctrl+X
           </button>
         </div>
       </div>
@@ -323,6 +323,38 @@
           </md-button>
         </md-dialog-actions>
       </md-dialog>
+
+
+      <div class="md-headline">
+        Load test, lowest hotkey priority
+      </div>
+
+      <div class="md-layout-item md-flex-none">
+        <input
+          v-model="loadEnabled"
+          v-hotkey="{ keys: 'Alt+L', action: () => $nextTick(() => loadEnabled = !loadEnabled) }"
+          type="checkbox"
+        >
+        <label>Load test enabled (Alt+L): {{ keys.length }} keys, {{ modifiers.length }} modifiers ({{ modifiers.join(', ') }}), {{ keys.length * modifiers.length }} hotkeys</label>
+      </div>
+
+      <div class="md-layout md-alignment-center-left md-gutter">
+
+        <div
+          v-for="k in keys"
+          :key="k"
+          class="md-layout-item md-flex-none"
+        >
+          <button
+            v-hotkey="{ enabled: loadEnabled, keys: hotkeys(k), priority: -1 }"
+            class="button-1 md-layout-item"
+            @click="reported.push(`???+${k}`)"
+          >
+            {{ k }}
+          </button>
+        </div>
+
+      </div>
     </md-app-content>
   </md-app>
 </template>
@@ -339,8 +371,27 @@
                 divEnabled: true,
                 dialogActive: false,
                 confirmActive: false,
+                loadEnabled: false,
+                modifiers: [
+                    'Ctrl', 'Alt', 'Meta',
+                    'Ctrl+Shift', 'Alt+Shift', 'Meta+Shift', 'Ctrl+Alt', 'Ctrl+Meta', 'Alt+Meta',
+                    'Ctrl+Alt+Shift', 'Ctrl+Alt+Meta', 'Ctrl+Shift+Meta',
+                    'Ctrl+Alt+Shift+Meta',
+                ],
+                keys: [
+                    ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split(''),
+                    'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
+                    'Esc', 'Enter', 'Tab', 'Insert', 'Delete', 'Backspace',
+                    'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown',
+                ],
             }
         },
+
+        methods: {
+            hotkeys(key) {
+                return this.modifiers.map(m => `${m}+${key}`)
+            }
+        }
     }
 </script>
 
