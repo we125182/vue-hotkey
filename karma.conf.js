@@ -21,7 +21,8 @@ module.exports = function(config) {
         // Files to preprocess before being served (including required() files)
         // (https://npmjs.org/browse/keyword/karma-preprocessor)
         preprocessors: {
-            'tests/unit/**/*.spec.js': ['webpack', 'sourcemap'],
+            'tests/unit/**/*.js': ['webpack'],
+            '**/*.js': ['sourcemap'],
         },
 
         webpack: {
@@ -51,7 +52,7 @@ module.exports = function(config) {
         autoWatch: false,
 
         // Launch these browsers (https://npmjs.org/browse/keyword/karma-launcher)
-        browsers: ['ChromiumHeadless', /*'FirefoxHeadless'*/],
+        browsers: ['ChromiumHeadless', 'FirefoxHeadless'],
 
         // Exit after running the tests
         singleRun: true,

@@ -4,6 +4,9 @@ import { mount } from '@vue/test-utils'
 import hotkey from '@/../dist/directives.esm'
 
 
+Vue.config.productionTip = false
+Vue.config.devtools = false
+
 Vue.use(hotkey)
 
 
