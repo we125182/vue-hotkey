@@ -2,6 +2,7 @@
 
 ![Minified size](https://badgen.net/bundlephobia/min/@undecaf/vue-hotkey)
 ![Open issues](https://badgen.net/github/open-issues/undecaf/vue-hotkey)
+![Vulnerabilities](https://snyk.io/test/npm/@undecaf/vue-hotkey/badge.svg)
 ![Total downloads](https://badgen.net/npm/dt/@undecaf/vue-hotkey)
 ![License](https://badgen.net/github/license/undecaf/vue-hotkey)
 
@@ -20,11 +21,15 @@ a function call. It offers the following features:
     Multiple hotkeys can be mapped to the same action.
 +   Hotkeys will override browser shortcuts if possible.
 +   High performance: the `keydown` event overhead is very low and practically independent of the number
-    of hotkeys (the test app in the [repository](https://github.com/undecaf/vue-hotkey) defines
-    over 800&nbsp; hotkeys). 
+    of hotkeys (in [this example](https://undecaf.github.io/vue-hotkey/example/),
+    over 800&nbsp; hotkeys are defined). 
 +   The configuration can be changed dynamically.
 +   The directive can be disabled.
-   
+
+An example demonstrating `v-hotkey` for plain HTML and Vue Material components
+ [is available here](https://undecaf.github.io/vue-hotkey/example/)
+([example source code](https://github.com/undecaf/vue-hotkey/blob/master/src/components/Demo.vue)).
+
 
 ## Installation
 
@@ -61,8 +66,8 @@ Unspecified options get default values.
 
 The configuration object supports the following properties:
 
-| Name | Type | Effect | Default |
-|------|------|--------|---------|
+| Name | Type | Description | Default |
+|------|------|-------------|---------|
 | `enabled` | `Boolean` | Enables the directive if truthy. | `true` |
 | `keys` | `String` or `Array<String>` | Hotkey(s) in the format <code>[Ctrl+][Shift+][Alt+][Meta+]<a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values">key_value</a></code>.<br>Plain characters should have at least one `Ctrl`, `Alt` or `Meta` modifier in order to avoid conflicts with input elements (see [this example](#using-plain-characters-as-hotkeys) for an exception). `Shift` is irrelevant for plain characters as they are matched case-insensitively.<br>Hotkeys will override browser shortcuts if possible.| none, must be specified |
 | `action` | `String` or `Event` or `Function` | An event name, an [`Event`](https://developer.mozilla.org/en-US/docs/Web/API/Event) object, or a function to be called.<br>The function receives the target element as argument, and `this` references the surrounding Vue component's `vm`. | `'click'` |

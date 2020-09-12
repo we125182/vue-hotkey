@@ -4,25 +4,25 @@
     md-waterfall
     md-mode="fixed"
   >
-    <md-app-toolbar class="md-primary md-dense md-layout md-alignment-center-space-between">
-      <div class="md-layout-item md-title">
-        Testing v-hotkey
+    <md-app-toolbar class="md-primary md-dense md-layout md-gutter">
+      <div class="md-title">
+        v-hotkey events:
       </div>
+
+      <div id="reported" class="md-layout-item md-body-1">{{ reported.join(', ') }}</div>
+
+      <md-button
+        id="clear-reported"
+        class="md-icon-button md-dense"
+        @click="reported = []"
+      >
+        <md-icon>clear</md-icon>
+        <md-tooltip md-delay="300">Clears the event list</md-tooltip>
+      </md-button>
     </md-app-toolbar>
 
     <md-app-content>
       <div class="md-layout md-alignment-center-left">
-        <div class="md-subheading">
-          Reported events: <span id="reported">{{ reported.join(', ') }}</span>
-        </div>
-
-        <md-button
-          id="clear-reported"
-          class="md-icon-button md-dense"
-          @click="reported = []"
-        >
-          <md-icon>clear</md-icon>
-        </md-button>
       </div>
 
       <hr>
@@ -326,7 +326,7 @@
 
 
       <div class="md-headline">
-        Load test, lowest hotkey priority
+        Load test (only if enabled), lowest hotkey priority
       </div>
 
       <div class="md-layout-item md-flex-none">

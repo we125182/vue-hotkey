@@ -1,7 +1,7 @@
 import Vue from "vue"
 import VueMaterial from 'vue-material'
 import hotkey from '@/../dist/directives.esm'
-import Test from "@/components/Test.vue"
+import Demo from "@/components/Demo.vue"
 import "@/main.css"
 
 
@@ -13,5 +13,5 @@ Vue.use(hotkey)
 
 new Vue({
     el: "#app",
-    render: h => h(Test),
+    render: h => h(Demo),
 })
