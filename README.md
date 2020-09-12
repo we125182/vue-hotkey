@@ -26,7 +26,7 @@ a function call. It offers the following features:
 +   The configuration can be changed dynamically.
 +   The directive can be disabled.
 
-An example demonstrating `v-hotkey` for plain HTML and Vue Material components
+An online example demonstrating `v-hotkey` for plain HTML and Vue Material components
  [is available here](https://undecaf.github.io/vue-hotkey/example/)
 ([example source code](https://github.com/undecaf/vue-hotkey/blob/master/src/components/Demo.vue)).
 
