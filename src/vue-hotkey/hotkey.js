@@ -205,6 +205,12 @@ const hotkey = {
         }
 
         Vue.prototype.$hotkey.handleEvent = function(keyEvent) {
+
+            // Ignore key events without a key property (caused by autocomplete)
+            if (!keyEvent.key) {
+                return
+            }
+
             // Do not process plain characters typed into contenteditable or input elements
             const keyId = toKeyId(keyEvent)
             if (keyId.length == 2 && document.activeElement &&
