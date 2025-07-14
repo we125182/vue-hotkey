@@ -129,7 +129,8 @@ function toKeyEvent(key) {
 
 
 function toKeyId(keyEvent) {
-    let id = keyEvent.key.toLowerCase() + '_'
+    const key = keyEvent.key || keyEvent.code.replace(/(key|digit)/i, '')
+    let id = key.toLowerCase() + '_'
 
     if (keyEvent.altKey) id += 'A'
     if (keyEvent.ctrlKey) id += 'C'
@@ -137,7 +138,7 @@ function toKeyId(keyEvent) {
 
     // The shift key is ignored for single characters that do not have any other modifier
     // because it depends on the type of keyboard whether or not it is required to produce that character
-    if (keyEvent.shiftKey && (keyEvent.key.length !== 1 || keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey)) {
+    if (keyEvent.shiftKey && (key.length !== 1 || keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey)) {
         id += 'S'
     }
 
@@ -207,7 +208,7 @@ const hotkey = {
         Vue.prototype.$hotkey.handleEvent = function(keyEvent) {
 
             // Ignore key events without a key property (caused by autocomplete)
-            if (!keyEvent.key) {
+            if (!keyEvent.key && !keyEvent.code) {
                 return
             }
 
