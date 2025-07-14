@@ -30,6 +30,7 @@ const defaults = {
     action: 'click',    // which action to perform on the selected element
     selector: '*',      // the action is performed on the first matching element
     priority: 0,        // priority in relation to other hotkey options
+    displayKeys: false,  // display the hotkey(s) in the element
 }
 
 function setOptions(el, binding, vnode) {
@@ -92,6 +93,7 @@ function setOptions(el, binding, vnode) {
 
     // Invalidate the global keymap so that it gets rebuilt on the next key event
     delete vnode.context.$hotkey.keymap
+    return options
 }
 
 
@@ -194,10 +196,11 @@ function cleanup(vnode) {
 
 
 const hotkey = {
-    install(Vue) {
+    install(Vue, defaultOptions) {
         if (this.install.installed) {
             return
         }
+        Object.assign(defaults, defaultOptions)
         this.install.installed = true
 
 
@@ -256,7 +259,12 @@ const hotkey = {
     },
 
     bind(el, binding, vnode) {
-        setOptions(el, binding, vnode)
+        const options = setOptions(el, binding, vnode)
+        if ((el.tagName === 'BUTTON' || el.getAttribute('role') === 'button') && options.displayKeys) {
+            const kbd = document.createElement('kbd')
+            kbd.innerText = options.keys
+            el.appendChild(kbd)
+        }
     },
 
     update(el, binding, vnode, oldVnode) {
