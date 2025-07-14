@@ -1,6 +1,6 @@
 {
-  "name": "@undecaf/vue-hotkey",
-  "version": "0.1.5",
+  "name": "@we125182/vue-hotkey",
+  "version": "0.0.1",
   "description": "A flexible Vue hotkey directive",
   "keywords": [
     "vue",
@@ -19,15 +19,15 @@
   "style": "dist/directives.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/undecaf/vue-hotkey"
+    "url": "git+https://github.com/we125182/vue-hotkey.git"
   },
   "files": [
-    "dist/*"
+    "dist/*",
+    "src/vue-hotkey/*"
   ],
   "scripts": {
     "prebuild": "rimraf dist/directives.*",
     "build": "NODE_ENV=production rollup --config rollup.config.js",
-    "postbuild": "node terser.js dist/directives.*.js",
     "prebuild:example": "rimraf docs/example",
     "build:example": "vue-cli-service build --dest docs/example",
     "serve": "vue-cli-service serve",
@@ -75,5 +75,8 @@
   },
   "peerDependencies": {
     "vue": "^2.6.1"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   }
 }
